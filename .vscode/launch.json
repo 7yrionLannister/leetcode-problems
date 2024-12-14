@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "CanJump2",
+            "request": "launch",
+            "mainClass": "CanJump2",
+            "projectName": "probles_3dd727e"
+        },
+        {
             "name": "Launch Package",
             "type": "go",
             "request": "launch",
