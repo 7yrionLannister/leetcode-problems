@@ -16,6 +16,11 @@ func main() {
 	fmt.Println("From index 1 to 3:", mySlice[1:4])
 	fmt.Println("From index 1:", mySlice[1:])
 	fmt.Println("Until index 3:", mySlice[:4])
+	demoSlice := make([]int, 5)
+	demoSlice = append(demoSlice, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+	fmt.Println("Demo slice:", demoSlice)
+	fmt.Println("Length of demoSlice:", len(demoSlice))   // number of elements
+	fmt.Println("Capacity of demoSlice:", cap(demoSlice)) // number of elements that can be stored before a reallocation
 	fmt.Println(getCoordinates())
 	// Below, because Wheel is an anonymous struct, you have to redeclare it to access its fields.
 	// With named structs like Chassis, you can access its fields directly.
@@ -28,6 +33,23 @@ func main() {
 	fmt.Println("area of r:", r.area())
 	fmt.Println(s)
 	//fmt.Println(area(r)) you can't call area() independently of Rectangle, because it is a method of Rectangle
+
+	strings := []string{"a", "b", "c"}
+	fmt.Println("Printing the slice through variatic function")
+	variaticFunction(strings...) // ... in the caller acts as a spread operator
+	// this could also be written as:
+	variaticFunction("c", "d", "e")
+	myMap := map[string]int{"a": 1, "b": 2, "c": 3, "d": 0}
+	// non-existent elements are initialized to the zero value of the map's key type
+	// to differentiate the missing key from the actual zero value, use the ok result of lookup, which tells you whether the key existed
+	existing0Mapping, ok := myMap["d"]
+	fmt.Println("Existing element of myMap:", existing0Mapping, ", ok:", ok)
+	nonExistingElement, nok := myMap["e"]
+	fmt.Println("Non-existing element of myMap:", nonExistingElement, ", nok:", nok)
+	fmt.Println("Keys of myMap:", myMap)
+
+	myFunction := FunctionProducer()
+	fmt.Println("Calling myFunction:", myFunction(10))
 }
 
 // Named return values tell you what to expect from the function.
@@ -37,6 +59,13 @@ func getCoordinates() (x, y int) {
 	x = 10
 	y = 20
 	return // same as return x, y
+}
+
+// just as a function can receive other functions as arguments, it can return other functions
+func FunctionProducer() func(int) int {
+	return func(x int) int {
+		return x * x
+	}
 }
 
 type Car struct {
@@ -83,4 +112,8 @@ type MyCustomError struct {
 // that way we avoid the need to implement the Error interface with a custom type
 func (m MyCustomError) Error() string { // here we implement the Error interface
 	return "MyCustomError: " + m.Message
+}
+
+func variaticFunction(a ...string) { // ... in the argument list acts as an indicator of a variadic argument (arbitrary number of arguments of the same type)
+	fmt.Println("Printing all the arguments", a)
 }
