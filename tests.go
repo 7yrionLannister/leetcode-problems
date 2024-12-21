@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 	//"maps"
 	//"math"
 	//"strconv"
@@ -90,10 +91,69 @@ func main() {
 		// IMPORTANT: always close the channel when you are done sending values (usually at the end of the goroutine)
 	}()
 
-	// for i := range myChannel {
-	// 	fmt.Println("Receiving from the channel using range:", i)
-	// }
 	readChannel(myChannel)
+
+	// enterito := <- myChannel
+	// anotherChannel <- enterito
+	// anotherChannel <- <- myChannel // this is the same as the two lines above
+
+	myBufferedChannel := make(chan int, 3) // create a buffered channel of type int with a buffer of 3 elements
+	go func() {
+		for i := 0; i < 20; i++ {
+			fmt.Println("Sending", i, "to the buffered channel")
+			myBufferedChannel <- i // send i to the channel
+		}
+		close(myBufferedChannel)
+	}()
+
+	for i := range myBufferedChannel {
+		fmt.Println("Receiving from the buffered channel using range:", i)
+	}
+
+	messages := make(chan string, 2)
+	messages <- "buffered"
+	messages <- "channel"
+	//messages <- "deadlock" // this will cause a deadlock, because the channel is full
+	fmt.Println(<-messages)
+	fmt.Println(<-messages)
+
+	c1 := make(chan string)
+	c2 := make(chan string)
+
+	select {
+	case msg1 := <-c1:
+		fmt.Println("received with select", msg1)
+	case msg2 := <-c2:
+		fmt.Println("received with select", msg2)
+	case t := <-time.After(1 * time.Second): // time.After returns a channel that will send a value after the specified time
+		fmt.Println("timeout, current time is:", t)
+	}
+
+	// Each channel will receive a value after some amount of time, to simulate e.g. blocking RPC operations executing in concurrent goroutines.
+	go func() {
+		time.Sleep(1 * time.Second)
+		c1 <- "one"
+	}()
+	go func() {
+		time.Sleep(2 * time.Second)
+		c2 <- "two"
+	}()
+
+	// We’ll use select to await both of these values simultaneously, printing each one as it arrives.
+	for i := 0; i < 2; i++ {
+		select {
+		case msg1 := <-c1:
+			fmt.Println("received with select", msg1)
+		case c1 <- "coco": // you can also send a value to a channel with select
+			fmt.Println("sent with select")
+		case msg2 := <-c2:
+			fmt.Println("received with select", msg2)
+			// default: // the default case is executed if no other case is ready
+			// 	fmt.Println("default case, no message received")
+		}
+	}
+
+	// GENERICS
 	callGenericFunction()
 	var ordered1 int = 10
 	var ordered2 int = 20
@@ -116,6 +176,39 @@ func main() {
 	printArea(r)
 	c := &Circle{Radius: 10}
 	printArea(c)
+
+	// ERRORS
+
+	// with convertion you can check if an error is of a certain type, with equality you can check if it is a specific error
+	// if e, ok := err.(*MyCustomError); ok && e.Err == ErrPermission {
+	// 	// query failed because of a permission problem
+	// }
+
+	// there is a better approach to handle errors in Go
+	// this checks if the error is of a certain type, or if it wraps an error of that type (or any other error that wraps it)
+	// it goes through the error chain until it finds the error equivalent to the one you are looking for
+	// if errors.Is(err, ErrPermission) {
+	// 	// err, or some error that it wraps, is a permission problem
+	// }
+
+	// var e *MyCustomError
+	// Note: *MyCustomError is the type of the error.
+	// errors.As examines the tree of its first argument looking for an error that can be assigned (casted) to its
+	// second argument, which must be a pointer. If it succeeds, it performs the assignment and
+	// returns true. Otherwise, it returns false
+	// this is similar to if e, ok := err.(*MyCustomError); ok && e.Err == ErrPermission {}
+	// if errors.As(err, &e) {
+	// 	// err is a *MyCustomError, and e is set to the error's value
+	// }
+
+	// f, err := os.Open(filename)
+	// if err != nil {
+	// 	// The *os.PathError returned by os.Open is an internal detail.
+	// 	// To avoid exposing it to the caller, repackage it as a new
+	// 	// error with the same text. We use the %v formatting verb, since
+	// 	// %w would permit the caller to unwrap the original *os.PathError.
+	// 	return fmt.Errorf("%v", err)
+	// }
 }
 
 func intSeq() func() int {
@@ -126,7 +219,13 @@ func intSeq() func() int {
 	}
 }
 
-func readChannel(myChannel <-chan int) { // you can make a channel read-only by using the <-chan syntax
+func readChannel(myChannel <-chan int) {
+	// you can make a channel read-only by using the <-chan syntax
+	// sending to a read-only channel will cause a compilation error
+	//myChannel <- 10
+	// you can make a channel write-only by using the chan<- syntax
+	// receiving from a write-only channel will cause a compilation error
+	//i := <-myChannel
 	for i, ok := <-myChannel; ok; i, ok = <-myChannel { // receive from the channel, and check if it is still open and not empty
 		fmt.Println("Receiving from the channel using ok indicator:", i)
 	}
