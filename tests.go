@@ -5,6 +5,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/7yrionLannister/leetcode-problems/a/b"
 	//"maps"
 	//"math"
 	//"strconv"
@@ -209,6 +211,17 @@ func main() {
 	// 	// %w would permit the caller to unwrap the original *os.PathError.
 	// 	return fmt.Errorf("%v", err)
 	// }
+
+	// MUTEXES
+	var wg sync.WaitGroup
+	myVal := 0
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go protected(&wg, &myVal)
+	}
+	wg.Wait()
+	//var iiiii atomic.Value
+	fmt.Println(b.SayHello()) // b is in a package that is inside the a package, so the import path is "github.com/7yrionLannister/leetcode-problems/a/b"
 }
 
 func intSeq() func() int {
@@ -232,11 +245,13 @@ func readChannel(myChannel <-chan int) {
 }
 
 // MUTEXES are used to protect shared resources from concurrent access, like a database connection or a file.
-var mux sync.Mutex = sync.Mutex{} // create a mutex
-func protected() {
+var mux sync.Mutex // create a mutex
+func protected(wg *sync.WaitGroup, myVal *int) {
+	defer wg.Done()
 	mux.Lock()
 	defer mux.Unlock()
-	fmt.Println("Protected section")
+	*myVal++ // this is the protected resource
+	fmt.Println("Protected section", *myVal)
 }
 
 // Named return values tell you what to expect from the function.
