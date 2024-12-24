@@ -20,11 +20,14 @@ func main() {
 	// here we specify the output to be stdout and the log level to be debug
 	mySlogInfoAndDebugLevel := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: false, Level: slog.LevelDebug}))
 	// here we specify the output to be stderr and the log level to be error
-	mySlogErrorLevel := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{AddSource: false, Level: slog.LevelDebug}))
+	mySlogErrorLevel := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{AddSource: true, Level: slog.LevelError}))
 	// two loggers are created, one for info and debug level and the other for error level
 	// this is because we want to log info and debug level logs to stdout and error level logs to stderr
+	// although mySlogInfoAndDebugLevel can and will log error level logs, it is not recommended to do so
+	// as it will log error level logs to stdout
 
 	mySlogInfoAndDebugLevel.Info(fmt.Sprintf("%+v", args))
 	mySlogInfoAndDebugLevel.Debug(fmt.Sprint(*stringFlag))
-	mySlogErrorLevel.Error(fmt.Sprint(stringFlagvar))
+	mySlogErrorLevel.Error(stringFlagvar)
+	// example run go run tests2.go -name=pepe -namevar=asdasdasd a b c > out.log 2> error.log
 }
