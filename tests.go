@@ -1,7 +1,9 @@
 package main
 
 import (
+	"crypto/rand"
 	"fmt"
+	"math/big"
 	"strings"
 	"sync"
 	"time"
@@ -58,6 +60,8 @@ func main() {
 	// this could also be written as:
 	variaticFunction("c", "d", "e")
 	myMap := map[string]int{"a": 1, "b": 2, "c": 3, "d": 0}
+	randonNum, _ := rand.Int(rand.Reader, big.NewInt(10))
+	fmt.Println("Random number:", randonNum)
 	// non-existent elements are initialized to the zero value of the map's key type
 	// to differentiate the missing key from the actual zero value, use the ok result of lookup, which tells you whether the key existed
 	existing0Mapping, ok := myMap["d"]
