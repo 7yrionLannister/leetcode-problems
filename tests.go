@@ -317,7 +317,13 @@ func (c *Circle) area() float64 { // prefer using pointer receivers to avoid cop
 // }
 
 func printArea(s Shape) {
-	fmt.Println("area of s:", s.area())
+	switch s.(type) { // type switch
+	case *Rectangle:
+		fmt.Println("s is a Rectangle")
+	case *Circle:
+		fmt.Println("s is a Circle")
+	}
+	fmt.Println("area of s:", s.area()) // type assertion
 }
 
 type MyCustomError struct {
