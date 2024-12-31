@@ -358,7 +358,11 @@ func printArea(s Shape) {
 	case *Rectangle:
 		fmt.Printf("v is a %T and its value is %+v\n", v, v) // %T prints the type of the variable
 		// the type assertion below is not necessary, because the type switch already checked the type and stored it in v as a Rectangle
-		r := s.(*Rectangle) // type assertion, extract the value from the interface into a variable of the concrete type
+		// the ok variable is true if the type assertion succeeded, false otherwise (if false, the variable is the zero value of the type)
+		r, ok := s.(*Rectangle) // type assertion, extract the value from the interface into a variable of the concrete type
+		if ok {
+			fmt.Println("ok is true, type assertion to Rectangle succeeded")
+		}
 		fmt.Printf("s is a Rectangle: %+v\n", r)
 	case *Circle:
 		fmt.Printf("v is a %T and its value is %+v\n", v, v) // %T prints the type of the variable
