@@ -346,6 +346,11 @@ type YetAnotherInterface interface {
 }
 type TheLastInterface interface{}
 
+// the tilde (~) is used to define a type constraint that is satisfied by the types listed and their underlying types
+type MyInteger interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64
+}
+
 func printArea(s Shape) {
 	switch s.(type) { // type switch
 	case *Rectangle:
