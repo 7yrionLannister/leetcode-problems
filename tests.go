@@ -346,7 +346,7 @@ type YetAnotherInterface interface {
 }
 type TheLastInterface interface{}
 
-// the tilde (~) is used to define a type constraint that is satisfied by the types listed and their underlying types
+// the tilde (~) is used to define a type constraint that is satisfied by underlying types (int but also anything that can be converted to int or embeds int)
 type MyInteger interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64
 }
@@ -354,9 +354,11 @@ type MyInteger interface {
 func printArea(s Shape) {
 	switch s.(type) { // type switch
 	case *Rectangle:
-		fmt.Println("s is a Rectangle")
+		r := s.(*Rectangle) // type assertion, extract the value from the interface into a variable of the concrete type
+		fmt.Printf("s is a Rectangle: %+v\n", r)
 	case *Circle:
-		fmt.Println("s is a Circle")
+		c := s.(*Circle) // type assertion, extract the value from the interface into a variable of the concrete type
+		fmt.Printf("s is a Circle: %+v\n", c)
 	}
 	fmt.Println("area of s:", s.area()) // type assertion
 }
