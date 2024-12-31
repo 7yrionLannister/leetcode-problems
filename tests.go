@@ -183,6 +183,9 @@ func main() {
 	c := &Circle{Radius: 10}
 	printArea(c)
 
+	printAreaGeneric[*Circle](c)
+	printAreaGeneric(r)
+
 	// ERRORS
 
 	// with convertion you can check if an error is of a certain type, with equality you can check if it is a specific error
@@ -316,6 +319,11 @@ func (c *Circle) area() float64 { // prefer using pointer receivers to avoid cop
 // 	return c.Radius * c.Radius * 3.14159
 // }
 
+// you can also define an interface that extends another interface
+type Forma interface {
+	Shape
+}
+
 func printArea(s Shape) {
 	switch s.(type) { // type switch
 	case *Rectangle:
@@ -358,6 +366,10 @@ func (m MyGeneric[X]) Print() {
 
 func genericFunction[T any](x T) T { // instead of any, you can specify another interface. It would work similar to subtyping in Java
 	return x
+}
+
+func printAreaGeneric[T Forma](s T) {
+	fmt.Println("<generic> area of s:", s.area())
 }
 
 // with generics, a new way of defining interfaces is possible
