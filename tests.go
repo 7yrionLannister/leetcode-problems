@@ -352,12 +352,17 @@ type MyInteger interface {
 }
 
 func printArea(s Shape) {
-	switch s.(type) { // type switch
+	fmt.Printf("s is a %T and its value is %+v\n", s, s) // %T prints the type of the variable
+	switch v := s.(type) {                               // type switch
+	// the type assertion below is a type switch, which is a switch statement that checks the type of the variable
 	case *Rectangle:
+		fmt.Printf("v is a %T and its value is %+v\n", v, v) // %T prints the type of the variable
+		// the type assertion below is not necessary, because the type switch already checked the type and stored it in v as a Rectangle
 		r := s.(*Rectangle) // type assertion, extract the value from the interface into a variable of the concrete type
 		fmt.Printf("s is a Rectangle: %+v\n", r)
 	case *Circle:
-		c := s.(*Circle) // type assertion, extract the value from the interface into a variable of the concrete type
+		fmt.Printf("v is a %T and its value is %+v\n", v, v) // %T prints the type of the variable
+		c := s.(*Circle)                                     // type assertion, extract the value from the interface into a variable of the concrete type
 		fmt.Printf("s is a Circle: %+v\n", c)
 	}
 	fmt.Println("area of s:", s.area()) // type assertion
