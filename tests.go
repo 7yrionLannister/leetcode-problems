@@ -183,6 +183,8 @@ func main() {
 	c := &Circle{Radius: 10}
 	printArea(c)
 
+	var forma Forma = r
+	forma.area()
 	printAreaGeneric[*Circle](c)
 	printAreaGeneric(r)
 
@@ -323,6 +325,26 @@ func (c *Circle) area() float64 { // prefer using pointer receivers to avoid cop
 type Forma interface {
 	Shape
 }
+
+// you can also define an interface that is a union of other interfaces.
+// the only constraint is that the interfaces must not have methods.
+// you can't define a union of interfaces with methods, because it would be ambiguous.
+// however, the interfaces in the union can have other interface extensions (like [OtherInterface]).
+// this is useful when you want to define a function that can receive any of the interfaces in the union.
+// it's useful as a type constraint, because you can't create a variable of an interface union type.
+type InterfaceUnion interface {
+	OneInterface | OtherInterface
+}
+
+type OneInterface interface{}
+type OtherInterface interface {
+	AnotherInterface | YetAnotherInterface
+}
+type AnotherInterface interface{}
+type YetAnotherInterface interface {
+	TheLastInterface
+}
+type TheLastInterface interface{}
 
 func printArea(s Shape) {
 	switch s.(type) { // type switch
