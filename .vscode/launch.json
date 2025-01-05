@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "HIndex",
+            "request": "launch",
+            "mainClass": "HIndex",
+            "projectName": "probles_3dd727e"
+        },
+        {
+            "type": "java",
             "name": "CanJump2",
             "request": "launch",
             "mainClass": "CanJump2",
