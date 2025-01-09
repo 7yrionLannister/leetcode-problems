@@ -16,6 +16,7 @@ func canJump(nums []int) bool {
 	return canJumpRecursive(nums, 0, make([]bool, n))
 }
 
+// the array represents a graph of the possible paths the jumper can take by jumping.
 func canJumpRecursive(nums []int, index int, visited []bool) bool {
 	power := nums[index]
 	visited[index] = true

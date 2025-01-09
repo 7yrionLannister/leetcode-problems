@@ -1,14 +1,10 @@
 package main
 
-import "fmt"
+// https://leetcode.com/problems/two-sum
 
 // O(n)
 func twoSum(nums []int, target int) []int {
 	numberToIndex := make(map[int]int)
-	{
-		fmt.Println("")
-		println("asd")
-	}
 	for i, v := range nums {
 		index, present := numberToIndex[target-v]
 		if present {
