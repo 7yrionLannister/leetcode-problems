@@ -7,10 +7,10 @@ import (
 
 // https://leetcode.com/problems/minimum-size-subarray-sum
 func main() {
-	fmt.Println(minSubArrayLen(11, []int{1, 2, 3, 4, 5}))
-	fmt.Println(minSubArrayLen(4, []int{1, 4, 4}))
-	fmt.Println(minSubArrayLen(7, []int{2, 3, 1, 2, 4, 3}))
-	fmt.Println(minSubArrayLen(11, []int{1, 1, 1, 1, 1, 1, 1, 1}))
+	fmt.Println(minSubArrayLenNestedLoop(11, []int{1, 2, 3, 4, 5}))
+	fmt.Println(minSubArrayLenNestedLoop(4, []int{1, 4, 4}))
+	fmt.Println(minSubArrayLenNestedLoop(7, []int{2, 3, 1, 2, 4, 3}))
+	fmt.Println(minSubArrayLenNestedLoop(11, []int{1, 1, 1, 1, 1, 1, 1, 1}))
 }
 
 // sliding window algorithm
@@ -40,6 +40,30 @@ func minSubArrayLen(target int, nums []int) int {
 			if j < n {
 				sum += nums[j]
 			}
+		}
+	}
+	if minSubArrayLength == math.MaxInt64 { // subarray not found
+		// no subarray summed up to target or more, so minSubArrayLength == math.MaxInt64 and we have to set it to 0
+		minSubArrayLength = 0
+	}
+	return minSubArrayLength
+}
+
+// sliding window algorithm
+// O(n), although there is a nested loop, i and j only traverse the elements once each, so the algorithm is still O(2n)==O(n)
+func minSubArrayLenNestedLoop(target int, nums []int) int {
+	n := len(nums)
+	minSubArrayLength := math.MaxInt64
+	i := 0
+	sum := 0
+
+	for j := 0; j < n && minSubArrayLength > 1; j++ {
+		sum += nums[j]
+		for sum >= target && minSubArrayLength > 1 {
+			currentSubArrayLength := j - i + 1
+			minSubArrayLength = min(minSubArrayLength, currentSubArrayLength)
+			sum -= nums[i]
+			i++
 		}
 	}
 	if minSubArrayLength == math.MaxInt64 { // subarray not found
