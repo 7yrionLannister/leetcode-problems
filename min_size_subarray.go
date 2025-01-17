@@ -20,19 +20,20 @@ func minSubArrayLen(target int, nums []int) int {
 	minSubArrayLength := math.MaxInt64
 	i, j := 0, 0
 	sum := nums[0]
-	foundSum := false
 	for j < n {
 		if sum >= target {
 			// sum is greather than or equal to target, compare (j-i+1) with minSubArrayLength and update it if it is less than it
-			foundSum = true // set flag to true, to know we can trust the value of minSubArrayLength by the end of the algorithm
 			currentSubArrayLength := j - i + 1
 			minSubArrayLength = min(minSubArrayLength, currentSubArrayLength)
+			if currentSubArrayLength == 1 {
+				// base case, you can break out of the loop early because you know you are not going to find a better subarray
+				break
+			}
 		}
 		if sum > target {
 			// sum exceeds target, so shrink the subarray (i++) and subtract the element left out (sum -= nums[i])
 			sum -= nums[i]
 			i++
-			foundSum = true
 		} else {
 			// sum is below or equal to target, so increase the subarray size to include more positive integers that add up to the sum
 			j++ // increase subarray size, which will either terminate the loop (if j == n) or end up in the first if conditional
@@ -41,7 +42,7 @@ func minSubArrayLen(target int, nums []int) int {
 			}
 		}
 	}
-	if !foundSum {
+	if minSubArrayLength == math.MaxInt64 { // subarray not found
 		// no subarray summed up to target or more, so minSubArrayLength == math.MaxInt64 and we have to set it to 0
 		minSubArrayLength = 0
 	}
