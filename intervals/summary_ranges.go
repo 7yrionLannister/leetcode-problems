@@ -14,6 +14,7 @@ func main() {
 	fmt.Println(summaryRanges([]int{0, 1}))
 }
 
+// https://leetcode.com/problems/summary-ranges
 func summaryRanges(nums []int) []string {
 	n := len(nums)
 	if n == 0 {
