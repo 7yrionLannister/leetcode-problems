@@ -18,23 +18,21 @@ func findSubstring(s string, words []string) []int {
 		wordsMap[word]++
 	}
 
+	uniqueWords := len(wordsMap)
 	i := 0
-	indices := []int{}
+	indices := make([]int, 0, len(s)/windowLength)
 	for j := windowLength - 1; j < n; j++ {
-		runningWordsMap := make(map[string]int)
+		runningWordsMap := make(map[string]int, uniqueWords)
 		match := true
 		for k := i; k <= j && match; k += wordLength {
 			wordEnd := k + wordLength
 			word := s[k:wordEnd]
-			targetWordCound := wordsMap[word]
+			targetWordCount := wordsMap[word]
 			currentCount := runningWordsMap[word]
-			if currentCount > targetWordCound {
+			if currentCount >= targetWordCount {
 				match = false
 			} else {
 				runningWordsMap[word]++
-				if currentCount+1 > targetWordCound {
-					match = false
-				}
 			}
 		}
 		if match {
