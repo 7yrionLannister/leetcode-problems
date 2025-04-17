@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"unicode/utf8"
-
-	"golang.org/x/exp/constraints"
 )
 
 func main() {
@@ -16,22 +14,21 @@ func main() {
 }
 
 func isSubsequence(s string, t string) bool {
-	constraints.Ordered
 	i := 0
 	nT := len(t)
 	nS := len(s)
 	count := 0
 	for _, r := range s {
-		for ; i < nT; i++ {
-			char, _ := utf8.DecodeRuneInString(t[i:])
+		for i < nT && count < nS {
+			char, _ := utf8.DecodeRuneInString(t[i:]) // t[i] if there are not strange characters, but use utf8 if not sure
+			i++
 			if char == r {
-				i++
 				count++
 				break
 			}
 		}
-		if i >= nT {
-			break
+		if i >= nT || count == nS {
+			break // microoptimization, if done traversing t, stop traversing s, if count==nS return true below
 		}
 	}
 	return count == nS

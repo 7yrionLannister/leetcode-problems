@@ -57,13 +57,13 @@ func minSubArrayLenNestedLoop(target int, nums []int) int {
 	i := 0
 	sum := 0
 
-	for j := 0; j < n && minSubArrayLength > 1; j++ {
-		sum += nums[j]
+	for j := 0; j < n && minSubArrayLength > 1; j++ /*grow window*/ {
+		sum += nums[j] // add element to the right
 		for sum >= target && minSubArrayLength > 1 {
 			currentSubArrayLength := j - i + 1
 			minSubArrayLength = min(minSubArrayLength, currentSubArrayLength)
-			sum -= nums[i]
-			i++
+			sum -= nums[i] // remove element from the left
+			i++            // shrink window
 		}
 	}
 	if minSubArrayLength == math.MaxInt64 { // subarray not found

@@ -8,6 +8,7 @@ import (
 // https://leetcode.com/problems/valid-palindrome/description/?envType=study-plan-v2&envId=top-interview-150
 func main() {
 	fmt.Println(isPalindrome("0P"))
+	fmt.Println(isPalindrome("anita lava la tina"))
 }
 
 func isPalindrome(s string) bool {
@@ -22,9 +23,7 @@ func isPalindrome(s string) bool {
 		for i <= j && palindrome {
 			r1 := toLower(rune(s[i]))
 			r2 := toLower(rune(s[j]))
-			if r1 != r2 {
-				palindrome = false
-			}
+			palindrome = r1 == r2
 			moveUntilNextLetter(&i, 1, s)
 			moveUntilNextLetter(&j, -1, s)
 		}
