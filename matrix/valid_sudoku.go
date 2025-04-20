@@ -31,16 +31,20 @@ func main() {
 	)
 }
 
+// https://leetcode.com/problems/valid-sudoku
+// O(n^2)
 func isValidSudoku(board [][]byte) bool {
-	rows := make([]map[byte]bool, 0, 9)
-	cols := make([]map[byte]bool, 0, 9)
-	quadrants := make([][]map[byte]bool, 0, 3)
+	rows := [9]map[byte]bool{}
+	cols := [9]map[byte]bool{}
+	quadrants := [3][3]map[byte]bool{}
+	x := 0
 	for i := range 3 {
-		quadrants = append(quadrants, make([]map[byte]bool, 0, 3))
-		for range 3 {
-			rows = append(rows, make(map[byte]bool, 9))
-			cols = append(cols, make(map[byte]bool, 9))
-			quadrants[i] = append(quadrants[i], make(map[byte]bool, 9))
+		for j := range 3 {
+			quadrants[i][j] = make(map[byte]bool, 9)
+
+			rows[x] = make(map[byte]bool, 9)
+			cols[x] = make(map[byte]bool, 9)
+			x++
 		}
 	}
 	for i, row := range board {
