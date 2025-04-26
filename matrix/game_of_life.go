@@ -1,22 +1,33 @@
 package main
 
-type change struct {
-	i, j, val int
-}
+const (
+	reviveMe = iota - 1
+	death
+	alive
+	killMe
+)
 
+// https://leetcode.com/problems/game-of-life
+// O(n^2) time
+// O(1) space
 func gameOfLife(board [][]int) {
-	changes := make([]change, 0, len(board)*len(board[0]))
 	for i, r := range board {
 		for j := range r {
-			changes = append(changes, checkNeighbors(board, i, j))
+			checkNeighbors(board, i, j)
 		}
 	}
-	for _, ch := range changes {
-		board[ch.i][ch.j] = ch.val
+	for i, r := range board {
+		for j, val := range r {
+			if val == reviveMe {
+				board[i][j] = 1
+			} else if val == killMe {
+				board[i][j] = 0
+			}
+		}
 	}
 }
 
-func checkNeighbors(board [][]int, i, j int) change {
+func checkNeighbors(board [][]int, i, j int) {
 	m := len(board)
 	n := len(board[0])
 	liveNeighbors := 0
@@ -28,16 +39,15 @@ func checkNeighbors(board [][]int, i, j int) change {
 			if jj < 0 || jj >= n || (ii == i && jj == j) {
 				continue
 			}
-			if board[ii][jj] == 1 {
+			if board[ii][jj] >= alive {
 				liveNeighbors++
 			}
 		}
 	}
-	if liveNeighbors < 2 || liveNeighbors > 3 {
-		return change{i, j, 0}
+	if board[i][j] == alive && (liveNeighbors < 2 || liveNeighbors > 3) {
+		board[i][j] = killMe
 	}
-	if liveNeighbors == 3 {
-		return change{i, j, 1}
+	if board[i][j] == death && liveNeighbors == 3 {
+		board[i][j] = reviveMe
 	}
-	return change{i, j, board[i][j]}
 }
