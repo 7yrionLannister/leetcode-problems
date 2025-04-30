@@ -8,30 +8,33 @@ import (
 )
 
 func main() {
-	fmt.Println(calculate("(1+(4+5+2)-3)+(6+8)"))
-	fmt.Println(calculate("(7)-(0)+(4)"))
-	fmt.Println(calculate("1-(     -2)"))
-	fmt.Println(calculate(" 2-1 + 2 "))
-	fmt.Println(calculate("123"))
-	fmt.Println(calculate("1+(2+3)+4"))
-	fmt.Println(calculate("1+2+3+4"))
+	fmt.Println(10, calculate("1+2+3+4"))
+	fmt.Println(10, calculate("1+(2+3)+4"))
+	fmt.Println(6, calculate("(1+(2+(3)))"))
+	fmt.Println(15, calculate("(1-(4-(5+2))-3)+(6+8)"))
+	fmt.Println(23, calculate("(1+(4+5+2)-3)+(6+8)"))
+	fmt.Println(11, calculate("(7)-(0)+(4)"))
+	fmt.Println(3, calculate("1-(     -2)"))
+	fmt.Println(3, calculate(" 2-1 + 2 "))
+	fmt.Println(123, calculate("123"))
 }
+
+var closingParentheses map[int]int
 
 func calculate(s string) int {
 	s = strings.Replace(s, " ", "", -1)
-
-	return calculateRecursive(s)
+	closingParentheses = getClosingParenthesesIndexMap(s)
+	return calculateRecursive(s, 0, len(s)-1)
 }
 
-func calculateRecursive(s string) int {
+func calculateRecursive(s string, start, end int) int {
 	runningCalculation := 0
-	n := len(s)
 	prevOperator := '+'
-	for i := 0; i < n; i++ {
+	for i := start; i <= end; i++ {
 		r := rune(s[i])
 		if r == '(' {
-			finish := getClosingParenthesesIndex(s, i)
-			number := calculateRecursive(s[i+1 : finish])
+			finish := closingParentheses[i]
+			number := calculateRecursive(s, i+1, finish)
 			runningCalculation += operand(prevOperator, number)
 			i = finish
 		} else if isDigit(r) {
@@ -46,22 +49,23 @@ func calculateRecursive(s string) int {
 	return runningCalculation
 }
 
-func getClosingParenthesesIndex(s string, start int) int {
-	stack := new(Stack[rune])
+func getClosingParenthesesIndexMap(s string) map[int]int {
+	parenthesesStack := new(Stack[rune])
+	indicesStack := new(Stack[int])
+	indicesMap := make(map[int]int)
 	n := len(s)
-	for start < n {
-		r := rune(s[start])
+	for i := 0; i < n; i++ {
+		r := rune(s[i])
 		if r == ')' {
-			stack.Pop()
-			if stack.IsEmpty() {
-				return start
-			}
+			parenthesesStack.Pop()
+			index, _ := indicesStack.Pop()
+			indicesMap[*index] = i
 		} else if r == '(' {
-			stack.Push(r)
+			parenthesesStack.Push(r)
+			indicesStack.Push(i)
 		}
-		start++
 	}
-	return start
+	return indicesMap
 }
 
 func operand(operator rune, number int) int {
