@@ -1,4 +1,4 @@
-package general
+package main
 
 // Time: O(n)
 func maxDepth(root *TreeNode) int {
