@@ -9,6 +9,8 @@ func main() {
 	fmt.Println(myPow(-1, -2147483648))
 }
 
+// se podria optimizar cacheando resultados
+// e.g. 2^16=((((2*2)*2*2)*2*2*2*2)*2*2*2*2*2*2*2*2): pasa de 16 multiplicaciones a tan solo 4
 // O (n)
 // https://leetcode.com/problems/powx-n/submissions
 func myPow(x float64, n int) float64 {
