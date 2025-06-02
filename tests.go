@@ -52,7 +52,7 @@ func main() {
 	var s Shape = r // r is a Rectangle, Rectangle implements the Shape interface, so r is a Shape
 	fmt.Println("area of r:", r.area())
 	fmt.Println(s)
-	//fmt.Println(area(r)) you can't call area() independently of Rectangle, because it is a method of Rectangle
+	// fmt.Println(area(r)) you can't call area() independently of Rectangle, because it is a method of Rectangle
 
 	myStrings := []string{"a", "b", "c"}
 	fmt.Println("Printing the slice through variatic function")
@@ -87,14 +87,14 @@ func main() {
 	println("Memory location of y:", &y, ", value of y:", *y, ", address to which y points:", y)
 
 	// CHANNELS
-	myChannel := make(chan int) // create a channel of type int
+	myChannel := make(chan int) // create a channel of type int (unbuffered)
 	go func() {
+		defer close(myChannel) // close the channel to signal the consumer that no more values will be sent
+		// IMPORTANT: always close the channel when you are done sending values (usually at the end of the goroutine)
 		for i := 0; i < 10; i++ {
 			fmt.Println("Sending", i, "to the channel")
 			myChannel <- i // send i to the channel
 		}
-		close(myChannel) // close the channel to signal the consumer that no more values will be sent
-		// IMPORTANT: always close the channel when you are done sending values (usually at the end of the goroutine)
 	}()
 
 	readChannel(myChannel)
@@ -116,10 +116,13 @@ func main() {
 		fmt.Println("Receiving from the buffered channel using range:", i)
 	}
 
+	// ch := make(chan int)
+	// ch <- 2 // this blocks indefinitely because there are not receivers for ch
+
 	messages := make(chan string, 2)
 	messages <- "buffered"
 	messages <- "channel"
-	//messages <- "deadlock" // this will cause a deadlock, because the channel is full
+	// messages <- "deadlock" // this will cause a deadlock, because the channel is full
 	fmt.Println(<-messages)
 	fmt.Println(<-messages)
 
@@ -128,9 +131,9 @@ func main() {
 
 	select {
 	case msg1 := <-c1:
-		fmt.Println("received with select", msg1)
+		fmt.Println("[not executed] received with select", msg1)
 	case msg2 := <-c2:
-		fmt.Println("received with select", msg2)
+		fmt.Println("[not executed] received with select", msg2)
 	case t := <-time.After(1 * time.Second): // time.After returns a channel that will send a value after the specified time
 		fmt.Println("timeout, current time is:", t)
 	}
@@ -165,7 +168,7 @@ func main() {
 	var ordered2 int = 20
 	fmt.Println("ordered1 < ordered2:", isLessThan(ordered1, ordered2))
 
-	//CLOSURES
+	// CLOSURES
 	// We call intSeq, assigning the result (a function) to nextInt. This function value captures its own i value, which will be updated each time we call nextInt.
 	nextInt := intSeq()
 
@@ -229,7 +232,7 @@ func main() {
 		go protected(&wg, &myVal)
 	}
 	wg.Wait()
-	//var iiiii atomic.Value
+	// var iiiii atomic.Value
 	fmt.Println(b.SayHello()) // b is in a package that is inside the a package, so the import path is "github.com/7yrionLannister/leetcode-problems/a/b"
 }
 
@@ -244,10 +247,10 @@ func intSeq() func() int {
 func readChannel(myChannel <-chan int) {
 	// you can make a channel read-only by using the <-chan syntax
 	// sending to a read-only channel will cause a compilation error
-	//myChannel <- 10
+	// myChannel <- 10
 	// you can make a channel write-only by using the chan<- syntax
 	// receiving from a write-only channel will cause a compilation error
-	//i := <-myChannel
+	// i := <-myChannel
 	for i, ok := <-myChannel; ok; i, ok = <-myChannel { // receive from the channel, and check if it is still open and not empty
 		fmt.Println("Receiving from the channel using ok indicator:", i)
 	}
@@ -336,14 +339,19 @@ type InterfaceUnion interface {
 	OneInterface | OtherInterface
 }
 
-type OneInterface interface{}
-type OtherInterface interface {
-	AnotherInterface | YetAnotherInterface
-}
-type AnotherInterface interface{}
-type YetAnotherInterface interface {
-	TheLastInterface
-}
+type (
+	OneInterface   interface{}
+	OtherInterface interface {
+		AnotherInterface | YetAnotherInterface
+	}
+)
+
+type (
+	AnotherInterface    interface{}
+	YetAnotherInterface interface {
+		TheLastInterface
+	}
+)
 type TheLastInterface interface{}
 
 // the tilde (~) is used to define a type constraint that is satisfied by underlying types (int but also anything that can be converted to int or embeds int)
