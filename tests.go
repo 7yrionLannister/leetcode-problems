@@ -87,7 +87,7 @@ func main() {
 	println("Memory location of y:", &y, ", value of y:", *y, ", address to which y points:", y)
 
 	// CHANNELS
-	myChannel := make(chan int) // create a channel of type int (unbuffered)
+	myChannel := make(chan int) // create a channel of type int (unbuffered, synchronous)
 	go func() {
 		defer close(myChannel) // close the channel to signal the consumer that no more values will be sent
 		// IMPORTANT: always close the channel when you are done sending values (usually at the end of the goroutine)
@@ -103,7 +103,7 @@ func main() {
 	// anotherChannel <- enterito
 	// anotherChannel <- <- myChannel // this is the same as the two lines above
 
-	myBufferedChannel := make(chan int, 3) // create a buffered channel of type int with a buffer of 3 elements
+	myBufferedChannel := make(chan int, 3) // create a buffered channel of type int with a buffer of 3 elements (asynchronous)
 	go func() {
 		for i := 0; i < 20; i++ {
 			fmt.Println("Sending", i, "to the buffered channel")

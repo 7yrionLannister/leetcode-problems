@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"runtime"
 )
 
 func main() {
+	fmt.Println("virtual cpus =", runtime.NumCPU())
 	var array []int
 	fmt.Println(array)        // nil array has empty array as zero value
 	fmt.Println(array == nil) // array is nil
@@ -28,6 +30,10 @@ func main() {
 		fmt.Println("read channel using range", i)
 	}
 	ch := make(chan int)
+	go func() {
+		fmt.Println("ch read", <-ch)
+	}()
 	ch <- 0
+
 	myChan <- 2 // panic: send on closed channel
 }
