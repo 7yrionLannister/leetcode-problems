@@ -90,9 +90,9 @@ func main() {
 	myChannel := make(chan int) // create a channel of type int (unbuffered, synchronous)
 	go func() {
 		defer close(myChannel) // close the channel to signal the consumer that no more values will be sent
-		// IMPORTANT: always close the channel when you are done sending values (usually at the end of the goroutine)
+		// IMPORTANT: for unbuffered channels always close the channel when you are done sending values (usually at the end of the goroutine)
 		for i := 0; i < 10; i++ {
-			fmt.Println("Sending", i, "to the channel")
+			fmt.Println("Sending", i, "to the unbuffered channel")
 			myChannel <- i // send i to the channel
 		}
 	}()
@@ -125,6 +125,11 @@ func main() {
 	// messages <- "deadlock" // this will cause a deadlock, because the channel is full
 	fmt.Println(<-messages)
 	fmt.Println(<-messages)
+
+	// unbufferedChannel := make(chan int)
+	// unbufferedChannel <- 1 // this blocks until there is a receiver for the channel. As there is no receiver, this will cause a deadlock
+	// unbufferedOrBufferedChannel := make(chan int, 1) // this is a buffered channel with a buffer of 1 element
+	// <-unbufferedOrBufferedChannel // this blocks until a message is sent to the channel, no matter if it is buffered or unbuffered. As the channel is empty, this will cause a deadlock
 
 	c1 := make(chan string)
 	c2 := make(chan string)
@@ -251,8 +256,8 @@ func readChannel(myChannel <-chan int) {
 	// you can make a channel write-only by using the chan<- syntax
 	// receiving from a write-only channel will cause a compilation error
 	// i := <-myChannel
-	for i, ok := <-myChannel; ok; i, ok = <-myChannel { // receive from the channel, and check if it is still open and not empty
-		fmt.Println("Receiving from the channel using ok indicator:", i)
+	for i, ok := <-myChannel; i < 10 && ok; i, ok = <-myChannel { // receive from the channel, and check if it is still open and not empty
+		fmt.Println("Receiving from the unbuffered channel using ok indicator:", i)
 	}
 }
 
