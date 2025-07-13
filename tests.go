@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/7yrionLannister/leetcode-problems/a/b"
@@ -130,9 +131,20 @@ func main() {
 	// unbufferedChannel <- 1 // this blocks until there is a receiver for the channel. As there is no receiver, this will cause a deadlock
 	// unbufferedOrBufferedChannel := make(chan int, 1) // this is a buffered channel with a buffer of 1 element
 	// <-unbufferedOrBufferedChannel // this blocks until a message is sent to the channel, no matter if it is buffered or unbuffered. As the channel is empty, this will cause a deadlock
+	// var once sync.Once
+	// once.Do(func() {
+	// 	once.Do(func() {
+	// 		fmt.Println("Deadlock because the last call (this one) to [Do] locks until the first [Do] (the outer one) returns")
+	// 	})
+	// })
 
 	c1 := make(chan string)
 	c2 := make(chan string)
+	var atomicInt32 atomic.Int32
+	atomicInt32.Store(20)
+	atomicInt32.Add(2)
+	atomicInt32.Add(5)
+	fmt.Println("Atomic Int32 value:", atomicInt32.Load())
 
 	select {
 	case msg1 := <-c1:
